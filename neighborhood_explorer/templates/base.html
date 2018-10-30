@@ -88,9 +88,14 @@
           {% endfor %}
       {% endif %}
 
-      {% comment %} {% block content %}
-        <p>Use this document as a way to quick start any new project.</p>
-      {% endblock content %} {% endcomment %}
+      {% block content %}
+      {% comment %} <p>Use this document as a way to quick start any new project.</p> {% endcomment %}
+      <div class="row">
+        <div class="col-md-6 offset-md-3">
+          {% block inner %}{% endblock %}
+        </div>
+      </div>  
+      {% endblock content %}
 
     </div> <!-- /container -->
 

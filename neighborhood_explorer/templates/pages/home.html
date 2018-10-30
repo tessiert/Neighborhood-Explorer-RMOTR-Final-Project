@@ -1,1 +1,19 @@
 {% extends "base.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+<hr>
+
+{% block inner %}
+    <!-- Address Search Form -->
+    {% comment %} <h3>Enter Address of Neighborhood to Explore</h3> {% endcomment %}
+    <form action="{% url 'search' %}" method='POST'>
+        {% csrf_token %}
+        <!-- Search Form -->
+        <div class="buttonHolder">
+            <input "id"="address" type="text" name="address" placeholder="Enter the address of the neighborhood to explore" size=80>
+            <button class="btn btn-primary" name="search_button" type="submit">{% trans "Search" %} </button>
+        </div>
+    </form>
+{% endblock %}
