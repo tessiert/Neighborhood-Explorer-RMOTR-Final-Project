@@ -21,13 +21,23 @@ urlpatterns = [
     ),
     path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
+    path(
+        "contact/",
+        TemplateView.as_view(template_name="pages/contact.html"),
+        name="contact",
+    ),
+    path(
+        "links/",
+        TemplateView.as_view(template_name="pages/links.html"),
+        name="links",
+    ),
 ] + static(
     settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
 )
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit
-    # these url in browser to see how these error pages look like.
+    # these url in browser to see how these error pages look.
     urlpatterns += [
         path(
             "400/",
