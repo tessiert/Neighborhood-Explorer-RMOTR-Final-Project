@@ -1,0 +1,5 @@
+[run]
+include = neighborhood_explorer/*
+omit = *migrations*, *tests*
+plugins =
+    django_coverage_plugin
