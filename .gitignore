@@ -287,5 +287,6 @@ neighborhood_explorer/media/
 
 
 .env
+.envrc
 .envs/*
 !.envs/.local/

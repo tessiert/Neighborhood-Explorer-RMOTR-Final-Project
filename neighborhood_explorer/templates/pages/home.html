@@ -5,9 +5,8 @@
 
 <hr>
 
-{% block inner %}
+{% block content %}
     <!-- Address Search Form -->
-    {% comment %} <h3>Enter Address of Neighborhood to Explore</h3> {% endcomment %}
     <form action="{% url 'search' %}" method='POST'>
         {% csrf_token %}
         <!-- Search Form -->
