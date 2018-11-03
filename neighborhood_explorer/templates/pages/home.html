@@ -1,18 +1,9 @@
-{% extends "base.html" %}
+{% extends "home_and_search.html" %}
 
 {% load i18n %}
 {% load crispy_forms_tags %}
 
-<hr>
-
-{% block content %}
-    <!-- Address Search Form -->
-    <form action="{% url 'search' %}" method='POST'>
-        {% csrf_token %}
-        <!-- Search Form -->
-        <div class="buttonHolder">
-            <input "id"="address" type="text" name="address" placeholder="Enter the address of the neighborhood to explore" size=80>
-            <button class="btn btn-primary" name="search_button" type="submit">{% trans "Search" %} </button>
-        </div>
-    </form>
-{% endblock %}
+{% block lower_title %}
+    <h1 style="padding: 1em 0 0 0;">Top Searches</h1>
+    <hr style="height:1px;border:none;color:#333;background-color:#333;" />
+{% endblock lower_title %}
