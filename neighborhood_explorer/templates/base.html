@@ -40,6 +40,7 @@
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
+        <img src="{% static 'images/favicons/favicon.ico' %}">
         <a class="navbar-brand" href="{% url 'home' %}">Neighborhood Explorer</a>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -56,7 +57,7 @@
             <li class="nav-item">
               <a class="nav-link" href="{% url 'links' %}">Links</a>
             </li>
-            {% if request.user.is_authenticated %}
+            {% comment %} {% if request.user.is_authenticated %}
               <li class="nav-item">
                 {# URL provided by django-allauth/account/urls.py #}
                 <a class="nav-link" href="{% url 'users:detail' request.user.username  %}">{% trans "My Profile" %}</a>
@@ -74,7 +75,7 @@
                 {# URL provided by django-allauth/account/urls.py #}
                 <a id="log-in-link" class="nav-link" href="{% url 'account_login' %}">{% trans "Sign In" %}</a>
               </li>
-            {% endif %}
+            {% endif %} {% endcomment %}
           </ul>
         </div>
       </nav>
