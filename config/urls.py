@@ -34,6 +34,7 @@ urlpatterns = [
         TemplateView.as_view(template_name="pages/links.html"),
         name="links",
     ),
+    path('', include('api.urls')),
 ] + static(
     settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
 )
