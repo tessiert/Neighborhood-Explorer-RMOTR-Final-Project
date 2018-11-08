@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 from pytz import timezone
 import requests
 
+from api.models import Searches
+
 # Create your views here.
 class SearchView(View):
 
@@ -23,8 +25,14 @@ class SearchView(View):
             return path + icon + '.png'
 
 
-    def post(self, request):
-        address = request.POST.get('address', '')
+    # Enables 'Top Searches' to function as links
+    def get(self, request, address):
+        return self.post(request, address)
+
+
+    def post(self, request, address=''):
+        if not address:
+            address = request.POST.get('address', '')
         encoded_address = address.replace(' ', '%20')
         geocode_URL = 'http://www.mapquestapi.com/geocoding/v1/address?key=X49B68O9Ab2W453JbXi1S8jC9AswBGP7&location={}'.format(encoded_address)
         try:
@@ -37,12 +45,30 @@ class SearchView(View):
             or geo_response['results'][0]['locations'][0]['adminArea1'] != 'US'
         ):
             return render(request, template_name='404.html', status=404)
+
+        # Pull address data from response
+        street = geo_response['results'][0]['locations'][0]['street']
+        city = geo_response['results'][0]['locations'][0]['adminArea5']
+        state = geo_response['results'][0]['locations'][0]['adminArea3']
+        zip_code = geo_response['results'][0]['locations'][0]['postalCode']
+
+        # Format the address to contain as much data as possible, with no
+        # hanging commas for missing pieces
         formatted_address = '{street}, {city}, {state}, {zip_code}'.format(
-            street=geo_response['results'][0]['locations'][0]['street'],
-            city=geo_response['results'][0]['locations'][0]['adminArea5'],
-            state=geo_response['results'][0]['locations'][0]['adminArea3'],
-            zip_code=geo_response['results'][0]['locations'][0]['postalCode']
+            street=street,
+            city=city,
+            state=state,
+            zip_code=zip_code
         ).lstrip(' ,').rstrip(' ,')
+
+        # If the current search is being done at least at city level accuracy,
+        # update count of, or add new record to top searches database
+        try:
+            city_search = Searches.objects.get(city=city, state=state)
+            city_search.count += 1
+        except Searches.DoesNotExist:
+            city_search = Searches(city=city, state=state, count=1)
+        city_search.save()
 
         # Get latitude and longitude for remaining API lookups
         latitude = geo_response['results'][0]['locations'][0]['latLng']['lat']

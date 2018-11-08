@@ -72,6 +72,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     'neighborhood_explorer.users.apps.UsersAppConfig',
     # Your stuff: custom apps go here
+    'home_app',
     'search_app',
     'api',
 ]

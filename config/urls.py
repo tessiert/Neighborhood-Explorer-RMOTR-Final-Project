@@ -5,10 +5,11 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
 
+from home_app.views import HomeView
 from search_app.views import SearchView
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
+    path("", HomeView.as_view(), name="home"),
     path(
         "about/",
         TemplateView.as_view(template_name="pages/about.html"),
@@ -24,6 +25,7 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
     path('search/', SearchView.as_view(), name='search'),
+    path('search/<str:address>/', SearchView.as_view(), name='top_search'),
     path(
         "contact/",
         TemplateView.as_view(template_name="pages/contact.html"),
