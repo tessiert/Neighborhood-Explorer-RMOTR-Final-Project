@@ -9,14 +9,16 @@
 {% endblock lower_title %}
 
 {% block lower_content %}
-    <ol>
+    <div style="text-align:center;">
+    <ol style="display: inline-block; text-align: left;">
         {% for cur_search in top_searches %}
             <h3>
                 <li> 
-                    {% comment %} <a "href={{ 'top_search' }}"> {{ cur_search.city }}, {{ cur_search.state }} </a> {% endcomment %}
-                    <a href="search/{{ cur_search.city }},{{ cur_search.state }}/">{{ cur_search.city }}, {{ cur_search.state }}</a>
+                    <a href="search/{{ cur_search.city }},{{ cur_search.state }}/">
+                    {{ cur_search.city }}, {{ cur_search.state }}</a>
                 </li>
             </h3>
         {% endfor %}
     </ol>
+    </div>
 {% endblock lower_content %}
