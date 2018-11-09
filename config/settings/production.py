@@ -1,16 +1,19 @@
 from .base import *  # noqa
 from .base import env
+import dj_database_url
 
 # GENERAL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 SECRET_KEY = env('DJANGO_SECRET_KEY')
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['neighborhood-explorer.com'])
+ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['.neighborhood-explorer.herokuapp.com'])
 
 # DATABASES
 # ------------------------------------------------------------------------------
-DATABASES['default'] = env.db('DATABASE_URL')  # noqa F405
+# DATABASES['default'] = env.db('DATABASE_URL')  # noqa F405
+db_from_env = dj_database_url.config()
+DATABASES['default'].update(db_from_env)
 DATABASES['default']['ATOMIC_REQUESTS'] = True  # noqa F405
 DATABASES['default']['CONN_MAX_AGE'] = env.int('CONN_MAX_AGE', default=60)  # noqa F405
 
@@ -104,7 +107,7 @@ TEMPLATES[0]['OPTIONS']['loaders'] = [  # noqa F405
 # https://docs.djangoproject.com/en/dev/ref/settings/#default-from-email
 DEFAULT_FROM_EMAIL = env(
     'DJANGO_DEFAULT_FROM_EMAIL',
-    default='Neighborhood Explorer <noreply@neighborhood-explorer.com>'
+    default='Neighborhood Explorer <noreply@neighborhood-explorer.herokuapp.com>'
 )
 # https://docs.djangoproject.com/en/dev/ref/settings/#server-email
 SERVER_EMAIL = env('DJANGO_SERVER_EMAIL', default=DEFAULT_FROM_EMAIL)
