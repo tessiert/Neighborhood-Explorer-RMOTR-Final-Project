@@ -3,6 +3,31 @@ Neighborhood Explorer
 
 A web app to explore key features of U.S. neighborhoods
 
+This site is currently under active development, and represents my final project
+for the RMOTR "Web Development with Django" 
+program.  The current state of the project can be accessed at
+https://neighborhood-explorer.herokuapp.com. When all features have been implemented, it will enable a user to 
+enter some or all of a U.S. address, and will then present information about the
+given location such as:  a three-day weather forecast, an interactive map and 
+check-box selection mechanism for the exploration of attractions and points of 
+interest in the area, and finally, relevant demographic information.  
+I start by using
+Mapquest's geolocation API to convert the input location into latitude and 
+longitude coordinates, and then use these to pull weather information from the 
+Dark Sky weather API.  The next task I 
+have planned is to pull and display points of interest information from the
+Google Places
+API, and finally demographic information from an API that is yet to be
+determined.
+
+This site also provides its own API endpoint at 
+https://Neighborhood-Explorer.herokuapp.com/api/
+which allows GET requests,
+and will return JSON containing information on how many times each City/State
+combination in the database (PostgreSQL is used) has been searched.  It is this 
+API that is accessed by the home page in order to construct the "Top Searches"
+results - employing a very simple in-house microservices architecture approach.
+
 .. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
      :target: https://github.com/pydanny/cookiecutter-django/
      :alt: Built with Cookiecutter Django
