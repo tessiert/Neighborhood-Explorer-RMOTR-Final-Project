@@ -10,7 +10,10 @@
 {% endblock lower_title %}
 
 {% block lower_content %}
-    <p>Current Conditions: {{ temperature }}&#8457, {{ summary }}</p>
+    <p>
+        <h4 style="text-align:center;margin:40px 0 20px 0;">Current Conditions: {{ temperature }}&#8457, {{ summary }}</h4>
+    </p>
+
     <style>
         .bordered {
         width: 140px;
@@ -31,7 +34,8 @@
             float: left;
         }
     </style>
-    <table style="border-collapse:separate;border-spacing:20px;">
+
+    <table align="center" style="border-collapse:separate;border-spacing:50px 20px;">
         <tr>
             <td>
                 <div class="bordered">
@@ -74,4 +78,9 @@
             </td>
         </tr>
     </table>
+
+    <p>
+        <h2 style="text-align:center;margin:40px 0 20px 0;">Coming Soon:  Points of Interest Map</h2>
+    </p>
+
 {% endblock lower_content %}
