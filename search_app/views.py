@@ -31,6 +31,9 @@ class SearchView(View):
 
 
     def post(self, request, address=''):
+        DAY_FORMAT = '%A,'
+        DATE_FORMAT = '%b. %d'
+
         if not address:
             address = request.POST.get('address', '')
         encoded_address = address.replace(' ', '%20')
@@ -38,19 +41,26 @@ class SearchView(View):
         try:
             geo_response = requests.get(geocode_URL).json()
         except requests.ConnectionError:
-            return render(request, template_name='500.html', context={'server': 'Mapquest geolocation'}, status=500)
+            return render(
+                request, 
+                template_name='500.html', 
+                context={'server': 'Mapquest geolocation'}, 
+                status=500
+                )
+
+        location_data = geo_response['results'][0]['locations'][0]
         if (
             geo_response['info']['statuscode'] != 0 
-            or geo_response['results'][0]['locations'][0]['adminArea3'] == ''
-            or geo_response['results'][0]['locations'][0]['adminArea1'] != 'US'
+            or location_data['adminArea3'] == ''
+            or location_data['adminArea1'] != 'US'
         ):
             return render(request, template_name='404.html', status=404)
 
         # Pull address data from response
-        street = geo_response['results'][0]['locations'][0]['street']
-        city = geo_response['results'][0]['locations'][0]['adminArea5']
-        state = geo_response['results'][0]['locations'][0]['adminArea3']
-        zip_code = geo_response['results'][0]['locations'][0]['postalCode']
+        street = location_data['street']
+        city = location_data['adminArea5']
+        state = location_data['adminArea3']
+        zip_code = location_data['postalCode']
 
         # Format the address to contain as much data as possible, with no
         # hanging commas for missing pieces
@@ -71,8 +81,8 @@ class SearchView(View):
         city_search.save()
 
         # Get latitude and longitude for remaining API lookups
-        latitude = geo_response['results'][0]['locations'][0]['latLng']['lat']
-        longitude = geo_response['results'][0]['locations'][0]['latLng']['lng']
+        latitude = location_data['latLng']['lat']
+        longitude = location_data['latLng']['lng']
         # Get weather at given geolocation
         weather_URL = 'https://api.darksky.net/forecast/b7e6ab1963787cc564ae9055b3b4b313/{},{}'.format(latitude, longitude)     
         try:
@@ -80,45 +90,27 @@ class SearchView(View):
         except requests.ConnectionError:
             return render(request, template_name='500.html', context={'server': 'Dark Sky weather'}, status=500)
 
-        today_data = weather_response['daily']['data'][0]
-        tomorrow_data = weather_response['daily']['data'][1]
-        day_after_data = weather_response['daily']['data'][2]
-
-        # Get image file locations for 3-day forecast
-        today_weather_image = self._get_weather_image(today_data['icon'])
-        tomorrow_weather_image = self._get_weather_image(tomorrow_data['icon'])
-        day_after_weather_image = self._get_weather_image(day_after_data['icon'])
-
-        # Extract corresponding dates
+        # Get current date in time zone of address
         zone = weather_response['timezone']
         today = datetime.now(timezone(zone))
-        tomorrow = today + timedelta(days=1)
-        day_after = today + timedelta(days=2)
-        day_format = '%A,'
-        date_format = '%b. %d'
+
+        days = [{}, {}, {}]
+        for i in range(3):
+            cur_data = weather_response['daily']['data'][i]
+            cur_day = today + timedelta(days=i) # today, tomorrow, day after
+
+            days[i]['name'] = cur_day.strftime(DAY_FORMAT)
+            days[i]['date'] = cur_day.strftime(DATE_FORMAT)
+            days[i]['low'] = round(cur_data['temperatureLow'])
+            days[i]['high'] = round(cur_data['temperatureHigh'])
+            days[i]['image'] = self._get_weather_image(cur_data['icon'])
+            days[i]['text'] = cur_data['icon']
 
         context = {
             'formatted_address': formatted_address.title(),
             'temperature': round(weather_response['currently']['temperature']), 
             'summary': weather_response['currently']['summary'],
-            'today_day': today.strftime(day_format),
-            'today_date': today.strftime(date_format),
-            'today_temp_low': round(today_data['temperatureLow']),
-            'today_temp_high': round(today_data['temperatureHigh']),
-            'today_weather_image': today_weather_image,
-            'today_weather_text': today_data['icon'],
-            'tomorrow_day': tomorrow.strftime(day_format),
-            'tomorrow_date': tomorrow.strftime(date_format),
-            'tomorrow_temp_low': round(tomorrow_data['temperatureLow']),
-            'tomorrow_temp_high': round(tomorrow_data['temperatureHigh']),
-            'tomorrow_weather_image': tomorrow_weather_image,
-            'tomorrow_weather_text': tomorrow_data['icon'],
-            'day_after_day': day_after.strftime(day_format),
-            'day_after_date': day_after.strftime(date_format),
-            'day_after_temp_low': round(day_after_data['temperatureLow']),
-            'day_after_temp_high': round(day_after_data['temperatureHigh']),
-            'day_after_weather_image': day_after_weather_image,
-            'day_after_weather_text': day_after_data['icon']
+            'days': days
             }
         return render(request, template_name='pages/search.html', context=context)
         #return JsonResponse(geo_response)

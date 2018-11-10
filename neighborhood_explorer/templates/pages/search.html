@@ -37,20 +37,24 @@
 
     <table align="center" style="border-collapse:separate;border-spacing:50px 20px;">
         <tr>
-            <td>
-                <div class="bordered">
-                    <div class="day_date">{{ today_day }}<br>{{ today_date }}</div>
-                    <p><img src="{{ today_weather_image }}" alt="{{ today_weather_text }}"></p>
-                    <p>
-                        <h3>
-                            <div class="low">{{ today_temp_low }}&deg</div>
-                            <div style="float: left">/</div>
-                            <div class="high">{{ today_temp_high }}&deg</div>
-                        </h3>
-                    </p>
-                </div>
-            </td>
-            <td>
+            {% for day in days %}
+                <td>
+                    <div class="bordered">
+                        <div class="day_date">
+                            {{ day.name }}<br>{{ day.date }}
+                        </div>
+                        <p><img src="{{ day.image }}" alt="{{ day.text }}"></p>
+                        <p>
+                            <h3>
+                                <div class="low">{{ day.low }}&deg</div>
+                                <div style="float: left">/</div>
+                                <div class="high">{{ day.high }}&deg</div>
+                            </h3>
+                        </p>
+                    </div>
+                </td>
+            {% endfor %}
+            {% comment %} <td>
                 <div class="bordered">
                     <div class="day_date">{{ tomorrow_day }}<br>{{ tomorrow_date }}</div>
                     <p><img src={{ tomorrow_weather_image }} alt="{{ tomorrow_weather_text }}"></p>
@@ -75,7 +79,7 @@
                         </h3>
                     </p>
                 </div>
-            </td>
+            </td> {% endcomment %}
         </tr>
     </table>
 
