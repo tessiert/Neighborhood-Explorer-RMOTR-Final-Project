@@ -15,7 +15,7 @@
     </p>
 
     <style>
-        .bordered {
+        .weather_border {
         width: 140px;
         height: 225px;
         padding: 1em 0 0 20px;
@@ -39,7 +39,7 @@
         <tr>
             {% for day in days %}
                 <td>
-                    <div class="bordered">
+                    <div class="weather_border">
                         <div class="day_date">
                             {{ day.name }}<br>{{ day.date }}
                         </div>
@@ -54,39 +54,52 @@
                     </div>
                 </td>
             {% endfor %}
-            {% comment %} <td>
-                <div class="bordered">
-                    <div class="day_date">{{ tomorrow_day }}<br>{{ tomorrow_date }}</div>
-                    <p><img src={{ tomorrow_weather_image }} alt="{{ tomorrow_weather_text }}"></p>
-                    <p>
-                        <h3>
-                            <div class="low">{{ tomorrow_temp_low }}&deg</div>
-                            <div style="float: left">/</div>
-                            <div class="high">{{ tomorrow_temp_high }}&deg</div>
-                        </h3>
-                    </p>
-                </div>
-            </td>
-            <td>
-                <div class="bordered">
-                    <div class="day_date">{{ day_after_day }}<br>{{ day_after_date }}</div>
-                    <p><img src="{{ day_after_weather_image }}" alt="{{ day_after_weather_text }}"></p>
-                    <p>
-                        <h3>
-                            <div class="low">{{ day_after_temp_low }}&deg</div>
-                            <div style="float: left">/</div>
-                            <div class="high">{{ day_after_temp_high }}&deg</div>
-                        </h3>
-                    </p>
-                </div>
-            </td> {% endcomment %}
         </tr>
     </table>
 
     <p>
-        <h2 style="text-align:center;margin:40px 0 20px 0;">
-            Coming Soon:  Interactive Points of Interest Map
-        </h2>
+        <h1 style="text-align:center;margin:40px 0 20px 0;">
+            Points of Interest
+        </h1>
     </p>
+
+    <table align="center" style="border-collapse:separate;border-spacing:20px 20px;">
+        <tr>
+            <td style="vertical-align:top">
+                <form action="">
+                    <select required style="width:200px;">
+                        <option value="">Point of Interest</option>
+                        <option value="amusement_park">Amusement Parks</option>
+                        <option value="aquarium_zoo">Aquariums/Zoos</option>
+                        <option value="cafe_restaurant">Cafés/Restaurants</option>
+                        <option value="campground">Campgrounds</option>
+                        <option value="live_theater">Live Theaters</option>
+                        <option value="movie_theater">Movie Theaters</option>
+                        <option value="museum">Museums</option>
+                        <option value="park">Parks/Nature Preserves</option>
+                        <option value="school">Schools (K-12)</option>
+                    </select>
+                    <div style="text-align:right;padding:10px 0 25px 0">
+                        <select required style="width:200px;">
+                            <option value="">Search Distance</option>
+                            <option value="two_miles">2 miles</option>
+                            <option value="five_miles">5 miles</option>
+                            <option value="ten_miles">10 miles</option>
+                            <option value="twenty_five_miles">25 miles</option>
+                        </select>
+                    </div>
+                    <div style="text-align:center">
+                        <input name="poi_search" type="submit">
+                    </div>
+                </form>
+            </td>
+            <td style="vertical-align:top">
+                <p><img src={{ map_url }} alt="Server Error:  Map Image Unavailable"></p>
+            </td>
+            <td style="vertical-align:top">
+                <textarea style="width:200px;height:400px;resize:none" readonly placeholder="Points of Interest will display here."></textarea>
+            </td>
+        </tr>
+    </table>
 
 {% endblock lower_content %}

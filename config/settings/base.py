@@ -242,3 +242,5 @@ SOCIALACCOUNT_ADAPTER = 'neighborhood_explorer.users.adapters.SocialAccountAdapt
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+MAP_KEY = env('MAP_KEY')
+WEATHER_KEY=env('WEATHER_KEY')

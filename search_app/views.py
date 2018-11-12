@@ -4,6 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from datetime import datetime, timedelta
 from pytz import timezone
 import requests
+from config.settings.base import MAP_KEY, WEATHER_KEY
 
 from api.models import Searches
 
@@ -37,7 +38,10 @@ class SearchView(View):
         if not address:
             address = request.POST.get('address', '')
         encoded_address = address.replace(' ', '%20')
-        geocode_URL = 'http://www.mapquestapi.com/geocoding/v1/address?key=X49B68O9Ab2W453JbXi1S8jC9AswBGP7&location={}'.format(encoded_address)
+        geocode_URL = 'http://www.mapquestapi.com/geocoding/v1/address?key={}&location={}'.format(
+            MAP_KEY,
+            encoded_address
+            )
         try:
             geo_response = requests.get(geocode_URL).json()
         except requests.ConnectionError:
@@ -84,7 +88,11 @@ class SearchView(View):
         latitude = location_data['latLng']['lat']
         longitude = location_data['latLng']['lng']
         # Get weather at given geolocation
-        weather_URL = 'https://api.darksky.net/forecast/b7e6ab1963787cc564ae9055b3b4b313/{},{}'.format(latitude, longitude)     
+        weather_URL = 'https://api.darksky.net/forecast/{}/{},{}'.format(
+            WEATHER_KEY,
+            latitude, 
+            longitude
+            )     
         try:
             weather_response = requests.get(weather_URL).json()
         except requests.ConnectionError:
@@ -106,11 +114,22 @@ class SearchView(View):
             days[i]['image'] = self._get_weather_image(cur_data['icon'])
             days[i]['text'] = cur_data['icon']
 
+        # places_URL = 'https://www.mapquestapi.com/search/v4/place?key={}&location={},{}&sort=distance
+
+        map_URL = 'https://www.mapquestapi.com/staticmap/v5/map?key={}&center={},{}&size=260,200@2x&scalebar=true&zoom=14&locations={},{}|via-sm-green&declutter=true'.format(
+            MAP_KEY,
+            latitude,
+            longitude,
+            latitude,
+            longitude
+        )
+       
         context = {
             'formatted_address': formatted_address.title(),
             'temperature': round(weather_response['currently']['temperature']), 
             'summary': weather_response['currently']['summary'],
-            'days': days
+            'days': days,
+            'map_url': map_URL
             }
         return render(request, template_name='pages/search.html', context=context)
         #return JsonResponse(geo_response)
