@@ -63,10 +63,12 @@
         </h1>
     </p>
 
+    <a name="poi_anchor"></a>
     <table align="center" style="border-collapse:separate;border-spacing:20px 20px;">
         <tr>
             <td style="vertical-align:top">
-                <form action="">
+                <form action="{% url 'search' %}" method='POST'>
+                    {% csrf_token %}
                     <select required style="width:200px;">
                         <option value="">Point of Interest</option>
                         <option value="amusement_park">Amusement Parks</option>
@@ -89,17 +91,32 @@
                         </select>
                     </div>
                     <div style="text-align:center">
+                        <!-- Pass all address data back to view to avoid 
+                             retreiving it again -->
+                        <input type="hidden" name="address" value="{{ formatted_address }}">
+                        <input type="hidden" name="latitude" value="{{ latitude }}">
+                        <input type="hidden" name="longitude" value="{{ longitude }}">
+                        <input type="hidden" name="temperature" value="{{ temperature }}">
+                        <input type="hidden" name="summary" value="{{ summary }}">
                         <input name="poi_search" type="submit">
                     </div>
                 </form>
             </td>
             <td style="vertical-align:top">
-                <p><img src={{ map_url }} alt="Server Error:  Map Image Unavailable"></p>
+                <p><img src={{ map_url }} alt="Server Error:  Map Image Unavailable" id="poi_map"></p>
             </td>
             <td style="vertical-align:top">
                 <textarea style="width:200px;height:400px;resize:none" readonly placeholder="Points of Interest will display here."></textarea>
             </td>
         </tr>
     </table>
-
+        <!-- If anchor provided in context, jump to that location -->
+    {% if anchor %}
+        <script type='text/javascript'>
+            $(document).ready(function(){
+                window.location = '#{{ anchor }}'
+            });
+        </script>
+    {% endif %}
 {% endblock lower_content %}
+

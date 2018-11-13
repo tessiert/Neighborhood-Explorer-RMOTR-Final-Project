@@ -11,6 +11,9 @@ from api.models import Searches
 # Create your views here.
 class SearchView(View):
 
+    # Structure to store 3-day weather forecast info.
+    DAYS = [{}, {}, {}]
+
     @classmethod
     def _get_weather_image(cls, icon):
         path = '/static/images/weather/'
@@ -26,7 +29,8 @@ class SearchView(View):
             return path + icon + '.png'
 
 
-    # Enables 'Top Searches' to function as links
+    # Forwarding GET to POST with included 'address' enables 'Top Searches' to 
+    # function as links
     def get(self, request, address):
         return self.post(request, address)
 
@@ -35,8 +39,37 @@ class SearchView(View):
         DAY_FORMAT = '%A,'
         DATE_FORMAT = '%b. %d'
 
+        # If user is doing a POI search, we've already pulled the geolocation
+        # data.
+        if request.POST.get('poi_search'):
+            address = request.POST.get('address')
+            latitude = request.POST.get('latitude')
+            longitude = request.POST.get('longitude')
+            # places_URL = 'https://www.mapquestapi.com/search/v4/place?key={}&location={},{}&sort=distance
+
+            map_URL = 'https://www.mapquestapi.com/staticmap/v5/map?key={map_key}&center={lat},{lon}&size=260,200@2x&scalebar=true&zoom=14&locations={lat},{lon}|via-sm-green&declutter=true'.format(
+                map_key=MAP_KEY,
+                lat=latitude,
+                lon=longitude
+            )
+        
+            context = {
+                'formatted_address': address,
+                'latitude': latitude,
+                'longitude': longitude,
+                'temperature': request.POST.get('temperature'), 
+                'summary': request.POST.get('summary'),
+                'days': self.DAYS,
+                'map_url': map_URL,
+                'anchor': 'poi_anchor'
+                }
+            return render(request, template_name='pages/search.html', context=context)
+
+        # If address is supplied, then user clicked a 'Top Searches' link.
+        # If not, get address from posted search bar form data.
         if not address:
             address = request.POST.get('address', '')
+
         encoded_address = address.replace(' ', '%20')
         geocode_URL = 'http://www.mapquestapi.com/geocoding/v1/address?key={}&location={}'.format(
             MAP_KEY,
@@ -102,17 +135,18 @@ class SearchView(View):
         zone = weather_response['timezone']
         today = datetime.now(timezone(zone))
 
-        days = [{}, {}, {}]
         for i in range(3):
             cur_data = weather_response['daily']['data'][i]
             cur_day = today + timedelta(days=i) # today, tomorrow, day after
 
-            days[i]['name'] = cur_day.strftime(DAY_FORMAT)
-            days[i]['date'] = cur_day.strftime(DATE_FORMAT)
-            days[i]['low'] = round(cur_data['temperatureLow'])
-            days[i]['high'] = round(cur_data['temperatureHigh'])
-            days[i]['image'] = self._get_weather_image(cur_data['icon'])
-            days[i]['text'] = cur_data['icon']
+            # Store 3-day forecast info in class variable, so we don't have
+            # to retreive it again if a POI search is performed
+            self.DAYS[i]['name'] = cur_day.strftime(DAY_FORMAT)
+            self.DAYS[i]['date'] = cur_day.strftime(DATE_FORMAT)
+            self.DAYS[i]['low'] = round(cur_data['temperatureLow'])
+            self.DAYS[i]['high'] = round(cur_data['temperatureHigh'])
+            self.DAYS[i]['image'] = self._get_weather_image(cur_data['icon'])
+            self.DAYS[i]['text'] = cur_data['icon']
 
         # places_URL = 'https://www.mapquestapi.com/search/v4/place?key={}&location={},{}&sort=distance
 
@@ -126,9 +160,11 @@ class SearchView(View):
        
         context = {
             'formatted_address': formatted_address.title(),
+            'latitude': latitude,
+            'longitude': longitude,
             'temperature': round(weather_response['currently']['temperature']), 
             'summary': weather_response['currently']['summary'],
-            'days': days,
+            'days': self.DAYS,
             'map_url': map_URL
             }
         return render(request, template_name='pages/search.html', context=context)

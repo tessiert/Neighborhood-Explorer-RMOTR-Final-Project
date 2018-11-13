@@ -113,6 +113,17 @@
       <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
 
       <!-- Your stuff: Third-party javascript libraries go here -->
+      <!-- Include jQuery -->
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+      <!-- If an anchor is included in the 'render' context, jump to it -->
+      {% if anchor %}
+        <script type='text/javascript'>
+          $(document).ready(function(){
+              window.location = '#{{ anchor }}'
+          });
+        </script>
+      {% endif %}
       
 
       <!-- place project specific Javascript in this file -->
