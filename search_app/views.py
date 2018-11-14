@@ -160,9 +160,9 @@ class SearchView(View):
             return render(request, template_name='404.html', status=404)
 
         # Pull address data from response
-        street = location_data['street']
-        city = location_data['adminArea5']
-        state = location_data['adminArea3']
+        street = location_data['street'].title()
+        city = location_data['adminArea5'].title()
+        state = location_data['adminArea3'].upper()
         zip_code = location_data['postalCode']
 
         # Format the address to contain as much data as possible, with no
@@ -226,7 +226,7 @@ class SearchView(View):
         )
        
         context = {
-            'formatted_address': formatted_address.title(),
+            'formatted_address': formatted_address,
             'latitude': latitude,
             'longitude': longitude,
             'temperature': round(weather_response['currently']['temperature']), 
