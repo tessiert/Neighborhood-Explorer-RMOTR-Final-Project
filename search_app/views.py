@@ -8,11 +8,13 @@ from config.settings.base import MAP_KEY, WEATHER_KEY
 
 from api.models import Searches
 
+# Data structure for 3-day weather forecast
+days = [{}, {}, {}]     # Global since can't return this structure from html to track state
+
 # Create your views here.
 class SearchView(View):
 
     # Class variables used to track state for current location
-    days = [{}, {}, {}]     # Data structure for 3-day weather forecast
     point_of_interest = ''  
     radius = ''
     sort_method = ''       
@@ -120,7 +122,7 @@ class SearchView(View):
                 'longitude': longitude,
                 'temperature': request.POST.get('temperature'), 
                 'summary': request.POST.get('summary'),
-                'days': self.days,
+                'days': days,
                 'map_url': map_URL,
                 'poi_descriptions': poi_descriptions,
                 'poi_start_val': self.point_of_interest,
@@ -206,12 +208,12 @@ class SearchView(View):
 
             # Store 3-day forecast info in class variable, so we don't have
             # to retreive it again if a POI search is performed
-            self.days[i]['name'] = cur_day.strftime(DAY_FORMAT)
-            self.days[i]['date'] = cur_day.strftime(DATE_FORMAT)
-            self.days[i]['low'] = round(cur_data['temperatureLow'])
-            self.days[i]['high'] = round(cur_data['temperatureHigh'])
-            self.days[i]['image'] = self._get_weather_image(cur_data['icon'])
-            self.days[i]['text'] = cur_data['icon']
+            days[i]['name'] = cur_day.strftime(DAY_FORMAT)
+            days[i]['date'] = cur_day.strftime(DATE_FORMAT)
+            days[i]['low'] = round(cur_data['temperatureLow'])
+            days[i]['high'] = round(cur_data['temperatureHigh'])
+            days[i]['image'] = self._get_weather_image(cur_data['icon'])
+            days[i]['text'] = cur_data['icon']
 
         # places_URL = 'https://www.mapquestapi.com/search/v4/place?key={}&location={},{}&sort=distance
 
@@ -229,7 +231,7 @@ class SearchView(View):
             'longitude': longitude,
             'temperature': round(weather_response['currently']['temperature']), 
             'summary': weather_response['currently']['summary'],
-            'days': self.days,
+            'days': days,
             'map_url': map_URL,
             'poi_descriptions': 'Top ten matches will appear here.',
             'poi_start_val': self.point_of_interest,
