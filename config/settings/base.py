@@ -4,6 +4,8 @@ Base settings to build other settings files upon.
 
 import environ
 
+days = [{},{},{}]
+
 ROOT_DIR = environ.Path(__file__) - 3  # (neighborhood_explorer/config/settings/base.py - 3 = neighborhood_explorer/)
 APPS_DIR = ROOT_DIR.path('neighborhood_explorer')
 

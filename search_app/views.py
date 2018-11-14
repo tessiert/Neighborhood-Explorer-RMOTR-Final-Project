@@ -4,20 +4,12 @@ from django.http import HttpResponse, JsonResponse
 from datetime import datetime, timedelta
 from pytz import timezone
 import requests
-from config.settings.base import MAP_KEY, WEATHER_KEY
+from config.settings.base import MAP_KEY, WEATHER_KEY, days
 
 from api.models import Searches
 
-days = [{}, {}, {}]     # Data structure for 3-day weather forecast
-
 # Create your views here.
-class SearchView(View):
-
-    # Class variables used to track state for current location
-    # point_of_interest = ''  
-    # radius = ''
-    # sort_method = ''       
-
+class SearchView(View):   
     
     @classmethod
     def _get_weather_image(cls, icon):
@@ -222,8 +214,6 @@ class SearchView(View):
             days[i]['high'] = round(cur_data['temperatureHigh'])
             days[i]['image'] = self._get_weather_image(cur_data['icon'])
             days[i]['text'] = cur_data['icon']
-
-        # places_URL = 'https://www.mapquestapi.com/search/v4/place?key={}&location={},{}&sort=distance
 
         map_URL = 'https://www.mapquestapi.com/staticmap/v5/map?key={}&center={},{}&size=260,200@2x&scalebar=true&zoom=14&locations={},{}|via-sm-green&declutter=true'.format(
             MAP_KEY,
