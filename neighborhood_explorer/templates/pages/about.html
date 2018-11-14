@@ -5,24 +5,27 @@
 
 {% block content %}
 <p>This site is currently under active development, and represents my final project
-for the <a href ="https://rmotr.com/">RMOTR</a> "Web Development with Django" 
-program.  When all features have been implemented, it will enable a user to 
-enter some or all of a U.S. address, and will then present information about the
-given location such as:  a three-day weather forecast, an interactive map and 
-check-box selection mechanism for the exploration of attractions and points of 
-interest in the area, and finally, relevant demographic information.  
-I start by using <a href="https://developer.mapquest.com/documentation/geocoding-api/">
-Mapquest's geolocation API</a> to convert the input location into latitude and 
+for the <a href ="https://rmotr.com/">RMOTR</a> "Web Development with Python and Django" 
+program.  It enables a user to enter some or all of a U.S. address, and then 
+retrieves and displays information about the given location - a three-day 
+weather forecast and a map and drop-down selection mechanism for the exploration 
+of attractions and other points of interest in the area.</p>  
+
+<p>I start by using <a href="https://developer.mapquest.com/documentation/geocoding-api/">
+Mapquest's geocoding API</a> to convert the input location into latitude and 
 longitude coordinates, and then use these to pull weather information from the 
-<a href="https://darksky.net/dev">Dark Sky weather API</a>.  The next task I 
-have planned is to pull and display points of interest information from the
-<a href="https://developers.google.com/places/web-service/intro">Google Places
-API</a>, and finally demographic information from an API that is yet to be
-determined.</p>
+<a href="https://darksky.net/dev">Dark Sky weather API</a>.  After that, and
+based on user selection criteria, I pull points of interest information from the 
+<a href="https://developer.mapquest.com/documentation/search-api/v4/swagger/">
+Mapquest Place Search API</a> 
+and use this information to populate a relevant map from the
+<a href="https://developer.mapquest.com/documentation/static-map-api/v5/map">
+Mapquest Static Map API</a> with location markers, as well as to retrieve and display
+associated textual information.</p>
 
 <p>This site also provides its own API endpoint at 
 <a href="http://Neighborhood-Explorer.herokuapp.com/api/">
-http://Neighborhood-Explorer.herokuapp.com/api/</a> which allows GET requests,
+http://Neighborhood-Explorer.herokuapp.com/api</a> which allows GET requests,
 and will return JSON containing information on how many times each City/State
 combination in the database (PostgreSQL is used) has been searched.  It is this 
 API that is accessed by the home page in order to construct the "Top Searches"

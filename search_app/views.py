@@ -11,9 +11,13 @@ from api.models import Searches
 # Create your views here.
 class SearchView(View):
 
-    # Structure to store 3-day weather forecast info.
-    DAYS = [{}, {}, {}]
+    # Class variables used to track state for current location
+    days = [{}, {}, {}]     # Data structure for 3-day weather forecast
+    point_of_interest = ''  
+    radius = ''
+    sort_method = ''       
 
+    
     @classmethod
     def _get_weather_image(cls, icon):
         path = '/static/images/weather/'
@@ -38,6 +42,13 @@ class SearchView(View):
     def post(self, request, address=''):
         DAY_FORMAT = '%A,'
         DATE_FORMAT = '%b. %d'
+        # Select appropriate map zoom level based on search radius (in meters)
+        map_zoom = {
+            '3219': '11',
+            '8047': '10',
+            '16093': '9',
+            '40234': '8'
+        }
 
         # If user is doing a POI search, we've already pulled the geolocation
         # data.
@@ -45,13 +56,63 @@ class SearchView(View):
             address = request.POST.get('address')
             latitude = request.POST.get('latitude')
             longitude = request.POST.get('longitude')
-            # places_URL = 'https://www.mapquestapi.com/search/v4/place?key={}&location={},{}&sort=distance
+            display_order = request.POST.get('display_order')
+            self.point_of_interest = request.POST.get('point_of_interest')
+            self.radius = request.POST.get('radius')
+            self.sort_method = request.POST.get('sort_method')
+            # If declutter is checked, it will return a value, otherwise no
+            # return value.  Input to mapper must be a 'boolean' text string.
+            if request.POST.get('declutter'):
+                declutter = 'true'
+            else:
+                declutter = 'false'
 
-            map_URL = 'https://www.mapquestapi.com/staticmap/v5/map?key={map_key}&center={lat},{lon}&size=260,200@2x&scalebar=true&zoom=14&locations={lat},{lon}|via-sm-green&declutter=true'.format(
+            places_URL = 'https://www.mapquestapi.com/search/v4/place?key={map_key}&circle={lon},{lat},{rad}&q={search_term}&sort={sort_method}'.format(
                 map_key=MAP_KEY,
+                lat=latitude,
+                lon=longitude,
+                rad=self.radius,
+                search_term=self.point_of_interest,
+                sort_method=self.sort_method
+            )
+
+            try:
+                places_response = requests.get(places_URL).json()
+            except requests.ConnectionError:
+                return render(
+                    request, 
+                    template_name='500.html', 
+                    context={'server': 'Mapquest points of interest'}, 
+                    status=500
+                    )
+
+            poi_descriptions = ''
+            # Initialize with marker for home location
+            place_markers = 'locations={lat},{lon}|via-sm-green||'.format(
                 lat=latitude,
                 lon=longitude
             )
+            count = 1
+            for place in places_response['results']:
+                poi_descriptions += str(count) + '. ' \
+                    + place['displayString'] + '\n\n'
+                place_markers += str(place['place']['geometry']['coordinates'][1]) \
+                    + ',' + str(place['place']['geometry']['coordinates'][0]) + '|' \
+                    + 'marker-sm-red-' + str(count) + '||'
+                count += 1
+            place_markers = place_markers.rstrip('|')                
+
+            map_URL = 'https://www.mapquestapi.com/staticmap/v5/map?key={map_key}&center={lat},{lon}&size=260,200@2x&scalebar=true&&zoom={zoom}&declutter={declutter}&{places}'.format(
+                map_key=MAP_KEY,
+                lat=latitude,
+                lon=longitude,
+                zoom=map_zoom[self.radius],
+                declutter=declutter,
+                places=place_markers
+            )
+
+            if not poi_descriptions:
+                poi_descriptions = 'No locations found.'
         
             context = {
                 'formatted_address': address,
@@ -59,8 +120,12 @@ class SearchView(View):
                 'longitude': longitude,
                 'temperature': request.POST.get('temperature'), 
                 'summary': request.POST.get('summary'),
-                'days': self.DAYS,
+                'days': self.days,
                 'map_url': map_URL,
+                'poi_descriptions': poi_descriptions,
+                'poi_start_val': self.point_of_interest,
+                'radius_start_val': self.radius,
+                'sort_start_val': self.sort_method,
                 'anchor': 'poi_anchor'
                 }
             return render(request, template_name='pages/search.html', context=context)
@@ -141,12 +206,12 @@ class SearchView(View):
 
             # Store 3-day forecast info in class variable, so we don't have
             # to retreive it again if a POI search is performed
-            self.DAYS[i]['name'] = cur_day.strftime(DAY_FORMAT)
-            self.DAYS[i]['date'] = cur_day.strftime(DATE_FORMAT)
-            self.DAYS[i]['low'] = round(cur_data['temperatureLow'])
-            self.DAYS[i]['high'] = round(cur_data['temperatureHigh'])
-            self.DAYS[i]['image'] = self._get_weather_image(cur_data['icon'])
-            self.DAYS[i]['text'] = cur_data['icon']
+            self.days[i]['name'] = cur_day.strftime(DAY_FORMAT)
+            self.days[i]['date'] = cur_day.strftime(DATE_FORMAT)
+            self.days[i]['low'] = round(cur_data['temperatureLow'])
+            self.days[i]['high'] = round(cur_data['temperatureHigh'])
+            self.days[i]['image'] = self._get_weather_image(cur_data['icon'])
+            self.days[i]['text'] = cur_data['icon']
 
         # places_URL = 'https://www.mapquestapi.com/search/v4/place?key={}&location={},{}&sort=distance
 
@@ -164,8 +229,11 @@ class SearchView(View):
             'longitude': longitude,
             'temperature': round(weather_response['currently']['temperature']), 
             'summary': weather_response['currently']['summary'],
-            'days': self.DAYS,
-            'map_url': map_URL
+            'days': self.days,
+            'map_url': map_URL,
+            'poi_descriptions': 'Top ten matches will appear here.',
+            'poi_start_val': self.point_of_interest,
+            'radius_start_val': self.radius,
+            'sort_start_val': self.sort_method
             }
         return render(request, template_name='pages/search.html', context=context)
-        #return JsonResponse(geo_response)

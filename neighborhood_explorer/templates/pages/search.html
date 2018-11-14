@@ -69,26 +69,49 @@
             <td style="vertical-align:top">
                 <form action="{% url 'search' %}" method='POST'>
                     {% csrf_token %}
-                    <select required style="width:200px;">
+                    <select id="point_of_interest" name="point_of_interest" required style="width:200px;">
                         <option value="">Point of Interest</option>
-                        <option value="amusement_park">Amusement Parks</option>
-                        <option value="aquarium_zoo">Aquariums/Zoos</option>
-                        <option value="cafe_restaurant">Cafés/Restaurants</option>
+                        <!-- Return query string for place search -->
+                        <option value="amusement">Amusement Parks</option>
+                        <option value="aquarium zoo">Aquariums/Zoos</option>
+                        <option value="cafe">Cafés/Eateries</option>
                         <option value="campground">Campgrounds</option>
-                        <option value="live_theater">Live Theaters</option>
-                        <option value="movie_theater">Movie Theaters</option>
+                        <option value="movie theater">Movie Theaters</option>
                         <option value="museum">Museums</option>
-                        <option value="park">Parks/Nature Preserves</option>
-                        <option value="school">Schools (K-12)</option>
+                        <option value="performing arts">Performing Arts</option>
+                        <option value="nature park">Parks/Nature Preserves</option>
+                        <option value="school">Schools</option>
                     </select>
-                    <div style="text-align:right;padding:10px 0 25px 0">
-                        <select required style="width:200px;">
+                    <script>
+                        setSelectedIndex(document.getElementById('point_of_interest'), '{{ poi_start_val }}');
+                    </script>
+                    <div style="text-align:right;padding:10px 0 0 0">
+                        <select id="radius" name="radius" required style="width:200px;">
                             <option value="">Search Distance</option>
-                            <option value="two_miles">2 miles</option>
-                            <option value="five_miles">5 miles</option>
-                            <option value="ten_miles">10 miles</option>
-                            <option value="twenty_five_miles">25 miles</option>
+                            <!-- Return mileage in meters -->
+                            <option value="3219">2 miles/3 km</option>
+                            <option value="8047">5 miles/8 km</option>
+                            <option value="16093">10 miles/16 km</option>
+                            <option value="40234">25 miles/40 km</option>
                         </select>
+                        <script>
+                            setSelectedIndex(document.getElementById('radius'), '{{ radius_start_val }}');
+                        </script>
+                    </div>
+                    <div style="text-align:right;padding:10px 0 0 0">
+                        <select id="sort_method" name="sort_method" required style="width:200px;">
+                            <option value="">Sort Method</option>
+                            <option value="relevance">Relevance</option>
+                            <option value="distance">Distance</option>
+                        </select>
+                        <script>
+                            setSelectedIndex(document.getElementById('sort_method'), '{{ sort_start_val }}');
+                        </script>
+                    </div>
+                    <div style="text-align:center;padding:10px 0 25px 0">
+                        <!-- if checked, True will be returned. If unchecked 
+                             nothing is returned. -->
+                        <input type="checkbox" name="declutter" value="True"> Declutter Map Markers <br>
                     </div>
                     <div style="text-align:center">
                         <!-- Pass all address data back to view to avoid 
@@ -106,17 +129,10 @@
                 <p><img src={{ map_url }} alt="Server Error:  Map Image Unavailable" id="poi_map"></p>
             </td>
             <td style="vertical-align:top">
-                <textarea style="width:200px;height:400px;resize:none" readonly placeholder="Points of Interest will display here."></textarea>
+                <textarea style="width:200px;height:400px;resize:none;font-family:arial;font-size:18px;" 
+                    readonly >{{ poi_descriptions }}</textarea>
             </td>
         </tr>
     </table>
-        <!-- If anchor provided in context, jump to that location -->
-    {% if anchor %}
-        <script type='text/javascript'>
-            $(document).ready(function(){
-                window.location = '#{{ anchor }}'
-            });
-        </script>
-    {% endif %}
 {% endblock lower_content %}
 
