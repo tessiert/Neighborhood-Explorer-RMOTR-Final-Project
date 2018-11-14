@@ -3,23 +3,6 @@ Neighborhood Explorer
 
 A web app to explore key features of U.S. neighborhoods
 
-I start by using
-Mapquest's geolocation API to convert the input location into latitude and 
-longitude coordinates, and then use these to pull weather information from the 
-Dark Sky weather API.  The next task I 
-have planned is to pull and display points of interest information from the
-Google Places
-API, and finally demographic information from an API that is yet to be
-determined.
-
-This site also provides its own API endpoint at 
-https://Neighborhood-Explorer.herokuapp.com/api/
-which allows GET requests,
-and will return JSON containing information on how many times each City/State
-combination in the database (PostgreSQL is used) has been searched.  It is this 
-API that is accessed by the home page in order to construct the "Top Searches"
-results - employing a very simple in-house microservices architecture approach.
-
 This site is currently under active development, and represents my final project
 for the RMOTR "Web Development with Python and Django" 
 program.  The current state of the project can be accessed at
