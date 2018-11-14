@@ -4,7 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from datetime import datetime, timedelta
 from pytz import timezone
 import requests
-from config.settings.base import MAP_KEY, WEATHER_KEY, days
+from config.settings.base import MAP_KEY, WEATHER_KEY
 
 from api.models import Searches
 
@@ -40,10 +40,9 @@ class SearchView(View):
 
 
     def post(self, request, address=''):
-        global days
-
         DAY_FORMAT = '%A,'
         DATE_FORMAT = '%b. %d'
+
         # Select appropriate map zoom level based on search radius (in meters)
         map_zoom = {
             '3219': '11',
@@ -122,7 +121,7 @@ class SearchView(View):
                 'longitude': longitude,
                 'temperature': request.POST.get('temperature'), 
                 'summary': request.POST.get('summary'),
-                'days': days,
+                'days': request.session['days'],
                 'map_url': map_URL,
                 'poi_descriptions': poi_descriptions,
                 'poi_start_val': self.point_of_interest,
@@ -202,6 +201,7 @@ class SearchView(View):
         zone = weather_response['timezone']
         today = datetime.now(timezone(zone))
 
+        days = [{}, {}, {}]
         for i in range(3):
             cur_data = weather_response['daily']['data'][i]
             cur_day = today + timedelta(days=i) # today, tomorrow, day after
@@ -214,6 +214,8 @@ class SearchView(View):
             days[i]['high'] = round(cur_data['temperatureHigh'])
             days[i]['image'] = self._get_weather_image(cur_data['icon'])
             days[i]['text'] = cur_data['icon']
+
+        request.session['days'] = days
 
         map_URL = 'https://www.mapquestapi.com/staticmap/v5/map?key={}&center={},{}&size=260,200@2x&scalebar=true&zoom=14&locations={},{}|via-sm-green&declutter=true'.format(
             MAP_KEY,
