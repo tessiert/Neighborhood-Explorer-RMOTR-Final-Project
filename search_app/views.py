@@ -8,12 +8,12 @@ from config.settings.base import MAP_KEY, WEATHER_KEY
 
 from api.models import Searches
 
+days = [{}, {}, {}]     # Data structure for 3-day weather forecast
 
 # Create your views here.
 class SearchView(View):
 
     # Class variables used to track state for current location
-    days = [{}, {}, {}]     # Data structure for 3-day weather forecast
     # point_of_interest = ''  
     # radius = ''
     # sort_method = ''       
@@ -35,6 +35,7 @@ class SearchView(View):
 
 
     def __init__(self):
+        # variables used to track state for current location
         self.point_of_interest = ''
         self.radius = ''
         self.sort_method = ''
@@ -47,6 +48,8 @@ class SearchView(View):
 
 
     def post(self, request, address=''):
+        global days
+
         DAY_FORMAT = '%A,'
         DATE_FORMAT = '%b. %d'
         # Select appropriate map zoom level based on search radius (in meters)
@@ -127,7 +130,7 @@ class SearchView(View):
                 'longitude': longitude,
                 'temperature': request.POST.get('temperature'), 
                 'summary': request.POST.get('summary'),
-                'days': SearchView.days,
+                'days': days,
                 'map_url': map_URL,
                 'poi_descriptions': poi_descriptions,
                 'poi_start_val': self.point_of_interest,
@@ -213,12 +216,12 @@ class SearchView(View):
 
             # Store 3-day forecast info in class variable, so we don't have
             # to retreive it again if a POI search is performed
-            SearchView.days[i]['name'] = cur_day.strftime(DAY_FORMAT)
-            SearchView.days[i]['date'] = cur_day.strftime(DATE_FORMAT)
-            SearchView.days[i]['low'] = round(cur_data['temperatureLow'])
-            SearchView.days[i]['high'] = round(cur_data['temperatureHigh'])
-            SearchView.days[i]['image'] = self._get_weather_image(cur_data['icon'])
-            SearchView.days[i]['text'] = cur_data['icon']
+            days[i]['name'] = cur_day.strftime(DAY_FORMAT)
+            days[i]['date'] = cur_day.strftime(DATE_FORMAT)
+            days[i]['low'] = round(cur_data['temperatureLow'])
+            days[i]['high'] = round(cur_data['temperatureHigh'])
+            days[i]['image'] = self._get_weather_image(cur_data['icon'])
+            days[i]['text'] = cur_data['icon']
 
         # places_URL = 'https://www.mapquestapi.com/search/v4/place?key={}&location={},{}&sort=distance
 
@@ -236,7 +239,7 @@ class SearchView(View):
             'longitude': longitude,
             'temperature': round(weather_response['currently']['temperature']), 
             'summary': weather_response['currently']['summary'],
-            'days': SearchView.days,
+            'days': days,
             'map_url': map_URL,
             'poi_descriptions': 'Top ten matches will appear here.',
             'poi_start_val': self.point_of_interest,
