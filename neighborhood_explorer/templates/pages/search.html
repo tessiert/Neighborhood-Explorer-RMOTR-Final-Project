@@ -70,7 +70,7 @@
                 <form action="{% url 'search' %}" method='POST'>
                     {% csrf_token %}
                     <select id="point_of_interest" name="point_of_interest" required style="width:200px;">
-                        <option value="">Point of Interest</option>
+                        <option value="" selected disabled hidden>Point of Interest</option>
                         <!-- Return query string for place search -->
                         <option value="amusement">Amusement Parks</option>
                         <option value="aquarium zoo">Aquariums/Zoos</option>
@@ -87,7 +87,7 @@
                     </script>
                     <div style="text-align:right;padding:10px 0 0 0">
                         <select id="radius" name="radius" required style="width:200px;">
-                            <option value="">Search Distance</option>
+                            <option value="" selected disabled hidden>Search Distance</option>
                             <!-- Return mileage in meters -->
                             <option value="3219">2 miles/3 km</option>
                             <option value="8047">5 miles/8 km</option>
@@ -100,7 +100,7 @@
                     </div>
                     <div style="text-align:right;padding:10px 0 0 0">
                         <select id="sort_method" name="sort_method" required style="width:200px;">
-                            <option value="">Sort Method</option>
+                            <option value="" selected disabled hidden>Sort Method</option>
                             <option value="relevance">Relevance</option>
                             <option value="distance">Distance</option>
                         </select>
