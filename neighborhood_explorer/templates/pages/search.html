@@ -66,7 +66,7 @@
     <a name="poi_anchor"></a>
     <table align="center" style="border-collapse:separate;border-spacing:20px 20px;">
         <tr>
-            <td style="vertical-align:top">
+            <td style="vertical-align:top;width:200px;">
                 <form action="{% url 'search' %}" method='POST'>
                     {% csrf_token %}
                     <select id="point_of_interest" name="point_of_interest" required style="width:200px;">
@@ -125,10 +125,10 @@
                     </div>
                 </form>
             </td>
-            <td style="vertical-align:top">
-                <p><img src={{ map_url }} alt="Server Error:  Map Image Unavailable" id="poi_map"></p>
+            <td style="vertical-align:top;">
+                <img src={{ map_url }} alt="Server Error:  Map Image Unavailable" id="poi_map" style="width:520px;height:400px;">
             </td>
-            <td style="vertical-align:top">
+            <td style="vertical-align:top;width:200px;height:400px;">
                 <textarea style="width:200px;height:400px;resize:none;font-family:arial;font-size:18px;" 
                     readonly >{{ poi_descriptions }}</textarea>
             </td>
