@@ -26,13 +26,6 @@ class SearchView(View):
             return path + icon + '.png'
 
 
-    def __init__(self):
-        # variables used to track state for current location
-        self.point_of_interest = ''
-        self.radius = ''
-        self.sort_method = ''
-
-
     # Forwarding GET to POST with included 'address' enables 'Top Searches' to 
     # function as links
     def get(self, request, address):
@@ -58,9 +51,9 @@ class SearchView(View):
             latitude = request.POST.get('latitude')
             longitude = request.POST.get('longitude')
             display_order = request.POST.get('display_order')
-            self.point_of_interest = request.POST.get('point_of_interest')
-            self.radius = request.POST.get('radius')
-            self.sort_method = request.POST.get('sort_method')
+            request.session['point_of_interest'] = request.POST.get('point_of_interest')
+            request.session['radius'] = request.POST.get('radius')
+            request.session['sort_method'] = request.POST.get('sort_method')
             # If declutter is checked, it will return a value, otherwise no
             # return value.  Input to mapper must be a 'boolean' text string.
             if request.POST.get('declutter'):
@@ -72,9 +65,9 @@ class SearchView(View):
                 map_key=MAP_KEY,
                 lat=latitude,
                 lon=longitude,
-                rad=self.radius,
-                search_term=self.point_of_interest,
-                sort_method=self.sort_method
+                rad=request.session['radius'],
+                search_term=request.session['point_of_interest'],
+                sort_method=request.session['sort_method']
             )
 
             try:
@@ -107,7 +100,7 @@ class SearchView(View):
                 map_key=MAP_KEY,
                 lat=latitude,
                 lon=longitude,
-                zoom=map_zoom[self.radius],
+                zoom=map_zoom[request.session['radius']],
                 declutter=declutter,
                 places=place_markers
             )
@@ -124,9 +117,9 @@ class SearchView(View):
                 'days': request.session['days'],
                 'map_url': map_URL,
                 'poi_descriptions': poi_descriptions,
-                'poi_start_val': self.point_of_interest,
-                'radius_start_val': self.radius,
-                'sort_start_val': self.sort_method,
+                'poi_start_val': request.session['point_of_interest'],
+                'radius_start_val': request.session['radius'],
+                'sort_start_val': request.session['sort_method'],
                 'anchor': 'poi_anchor'
                 }
             return render(request, template_name='pages/search.html', context=context)
@@ -234,8 +227,8 @@ class SearchView(View):
             'days': days,
             'map_url': map_URL,
             'poi_descriptions': 'Top ten matches will appear here.',
-            'poi_start_val': self.point_of_interest,
-            'radius_start_val': self.radius,
-            'sort_start_val': self.sort_method
+            'poi_start_val': request.session.get('point_of_interest', ''),
+            'radius_start_val': request.session.get('radius', ''),
+            'sort_start_val': request.session.get('sort_method', '')
             }
         return render(request, template_name='pages/search.html', context=context)
