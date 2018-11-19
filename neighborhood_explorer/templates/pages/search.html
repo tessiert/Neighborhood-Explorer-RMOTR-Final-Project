@@ -129,8 +129,19 @@
                 <img src={{ map_url }} alt="Server Error:  Map Image Unavailable" id="poi_map" style="width:520px;height:400px;">
             </td>
             <td style="vertical-align:top;width:200px;height:400px;">
-                <textarea style="width:200px;height:400px;resize:none;font-family:arial;font-size:18px;" 
-                    readonly >{{ poi_descriptions }}</textarea>
+                <div style="width:200px;height:400px;border:1px solid black;padding:5px;overflow-y:scroll;font-family:arial;font-size:18px;">
+                    {% for cur_poi in poi_info %}
+                        {% if cur_poi.link != '' %}
+                            <p>
+                                <a style="color: dark blue;" href="https://www.google.com/maps/search/?api=1&query={{ cur_poi.link }}">{{ cur_poi.description }}</a>
+                            </p>
+                        {% else %}
+                            <p>
+                                {{ cur_poi.description }}
+                            </p>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             </td>
         </tr>
     </table>

@@ -80,7 +80,7 @@ class SearchView(View):
                     status=500
                     )
 
-            poi_descriptions = ''
+            poi_info = []
             # Initialize with marker for home location
             place_markers = 'locations={lat},{lon}|via-sm-green||'.format(
                 lat=latitude,
@@ -88,8 +88,12 @@ class SearchView(View):
             )
             count = 1
             for place in places_response['results']:
-                poi_descriptions += str(count) + '. ' \
-                    + place['displayString'] + '\n\n'
+                poi_description = str(count) + '. ' + place['displayString'] + '\n\n'
+                poi_link = place['displayString'].replace(' ', '%20').replace(',', '%2C')
+                poi_info.append({
+                    'description': poi_description,
+                    'link': poi_link
+                })
                 place_markers += str(place['place']['geometry']['coordinates'][1]) \
                     + ',' + str(place['place']['geometry']['coordinates'][0]) + '|' \
                     + 'marker-sm-red-' + str(count) + '||'
@@ -105,8 +109,11 @@ class SearchView(View):
                 places=place_markers
             )
 
-            if not poi_descriptions:
-                poi_descriptions = 'No locations found.'
+            if not poi_info:
+                poi_info = [{
+                    'description': 'No locations found.',
+                    'link': ''
+                    }]
         
             context = {
                 'formatted_address': address,
@@ -116,7 +123,7 @@ class SearchView(View):
                 'summary': request.POST.get('summary'),
                 'days': request.session['days'],
                 'map_url': map_URL,
-                'poi_descriptions': poi_descriptions,
+                'poi_info': poi_info,
                 'poi_start_val': request.session['point_of_interest'],
                 'radius_start_val': request.session['radius'],
                 'sort_start_val': request.session['sort_method'],
@@ -217,6 +224,11 @@ class SearchView(View):
             latitude,
             longitude
         )
+
+        poi_info = [{
+            'description': 'Top ten matches will appear here.',
+            'link': ''
+            }]
        
         context = {
             'formatted_address': formatted_address,
@@ -226,9 +238,9 @@ class SearchView(View):
             'summary': weather_response['currently']['summary'],
             'days': days,
             'map_url': map_URL,
-            'poi_descriptions': 'Top ten matches will appear here.',
-            'poi_start_val': request.session.get('point_of_interest', ''),
-            'radius_start_val': request.session.get('radius', ''),
-            'sort_start_val': request.session.get('sort_method', '')
+            'poi_info': poi_info,
+            'poi_start_val': '',
+            'radius_start_val': '',
+            'sort_start_val': ''
             }
         return render(request, template_name='pages/search.html', context=context)
