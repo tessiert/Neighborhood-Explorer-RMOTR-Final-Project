@@ -88,7 +88,7 @@ class SearchView(View):
             )
             count = 1
             for place in places_response['results']:
-                poi_description = str(count) + '. ' + place['displayString'] + '\n\n'
+                poi_description = place['displayString'] + '\n\n'
                 poi_link = place['displayString'].replace(' ', '%20').replace(',', '%2C')
                 poi_info.append({
                     'description': poi_description,
@@ -98,7 +98,13 @@ class SearchView(View):
                     + ',' + str(place['place']['geometry']['coordinates'][0]) + '|' \
                     + 'marker-sm-red-' + str(count) + '||'
                 count += 1
-            place_markers = place_markers.rstrip('|')                
+            place_markers = place_markers.rstrip('|')    
+
+            if not places_response['results']:
+                poi_info = [{
+                    'description': 'No results found within the current search radius.',
+                    'link': ''
+                    }]            
 
             map_URL = 'https://www.mapquestapi.com/staticmap/v5/map?key={map_key}&center={lat},{lon}&size=260,200@2x&scalebar=true&&zoom={zoom}&declutter={declutter}&{places}'.format(
                 map_key=MAP_KEY,
@@ -108,12 +114,6 @@ class SearchView(View):
                 declutter=declutter,
                 places=place_markers
             )
-
-            if not poi_info:
-                poi_info = [{
-                    'description': 'No locations found.',
-                    'link': ''
-                    }]
         
             context = {
                 'formatted_address': address,

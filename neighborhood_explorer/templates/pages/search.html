@@ -133,7 +133,7 @@
                     {% for cur_poi in poi_info %}
                         {% if cur_poi.link != '' %}
                             <p>
-                                <a style="color: dark blue;" href="https://www.google.com/maps/search/?api=1&query={{ cur_poi.link }}">{{ cur_poi.description }}</a>
+                                {{ forloop.counter }}. <a target="_blank" style="color: dark blue;" href="https://www.google.com/maps/search/?api=1&query={{ cur_poi.link }}">{{ cur_poi.description }}</a>
                             </p>
                         {% else %}
                             <p>
