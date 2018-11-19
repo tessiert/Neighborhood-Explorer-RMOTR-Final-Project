@@ -10,15 +10,19 @@
 
 {% block lower_content %}
     <div style="text-align:center;">
+    <h3>
     <ol style="display: inline-block; text-align: left;">
         {% for cur_search in top_searches %}
-            <h3>
-                <li> 
-                    <a href="search/{{ cur_search.city }},{{ cur_search.state }}/">
-                    {{ cur_search.city }}, {{ cur_search.state }}</a>
-                </li>
-            </h3>
+            <li> 
+                <a href="search/{{ cur_search.city }},{{ cur_search.state }}/">
+                {{ cur_search.city }}, {{ cur_search.state }}</a>
+            </li>
         {% endfor %}
     </ol>
+        {% comment %} {% for cur_search in top_searches %}
+            <h3 style="display: inline-block;text-align:left;">{{ forloop.counter }}. <a href="search/{{ cur_search.city }},{{ cur_search.state }}/">
+                    {{ cur_search.city }}, {{ cur_search.state }}</a>
+            </h3>
+        {% endfor %} {% endcomment %}
     </div>
 {% endblock lower_content %}
