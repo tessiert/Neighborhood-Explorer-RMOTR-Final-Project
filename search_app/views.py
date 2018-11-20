@@ -135,6 +135,9 @@ class SearchView(View):
         # If not, get address from posted search bar form data.
         if not address:
             address = request.POST.get('address', '')
+            # If an address was not supplied in the search bar either, raise 404
+            if not address:
+                return render(request, template_name='404.html', status=404)
 
         encoded_address = address.replace(' ', '%20')
         geocode_URL = 'http://www.mapquestapi.com/geocoding/v1/address?key={}&location={}'.format(
