@@ -8,7 +8,7 @@ from config.settings.base import MAP_KEY, WEATHER_KEY
 
 from api.models import Searches
 
-# Create your views here.
+
 class SearchView(View):   
     
     @classmethod

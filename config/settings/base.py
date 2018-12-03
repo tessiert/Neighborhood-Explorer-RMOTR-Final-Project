@@ -71,7 +71,7 @@ THIRD_PARTY_APPS = [
 ]
 LOCAL_APPS = [
     'neighborhood_explorer.users.apps.UsersAppConfig',
-    # Your stuff: custom apps go here
+    # custom apps go here
     'home_app',
     'search_app',
     'api',
@@ -240,7 +240,7 @@ ACCOUNT_ADAPTER = 'neighborhood_explorer.users.adapters.AccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'neighborhood_explorer.users.adapters.SocialAccountAdapter'
 
 
-# Your stuff...
+# Environment variables
 # ------------------------------------------------------------------------------
 MAP_KEY = env('MAP_KEY')
 WEATHER_KEY=env('WEATHER_KEY')
